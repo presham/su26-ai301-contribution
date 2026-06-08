@@ -4,15 +4,15 @@
 **Contribution Number:** 1  
 **Student:** Resham Pokhrel  
 **Issue:** https://github.com/SwitchbackTech/compass-calendar/issues/841  
-**Status:** Phase I 
+**Status:** Phase I Complete 
 
 ---
 
 ## Why I Chose This Issue
 
-This issue caught my attention because it sits at the intersection of build tooling and configuration management — two areas I've been actively exploring. The task of extending a Zod validation schema, updating TypeScript types, and wiring up a CLI argument parser with an environment variable fallback is a well-scoped, end-to-end change that touches real patterns used in production monorepos. As someone building skills in TypeScript and full-stack engineering, this feels like a great opportunity to work with a clean, well-structured codebase and understand how analytics credentials are safely handled at build time.
+This issue caught my attention because it sits at the intersection of build tooling and configuration management - two areas I've been actively exploring. The task of extending a Zod validation schema, updating TypeScript types, and wiring up a CLI argument parser with an environment variable fallback is a well-scoped, end-to-end change that touches real patterns used in production monorepos. As someone building skills in TypeScript and full-stack engineering, this feels like a great opportunity to work with a clean, well-structured codebase and understand how analytics credentials are safely handled at build time.
 
-Beyond the technical side, I'm drawn to this issue because it's a meaningful contribution to a real open-source product that people use daily. I hope to deepen my understanding of how CLI tooling integrates with frontend build pipelines, and get hands-on experience with Zod schema design and the Bun-based monorepo workflow that Compass uses. Contributing here would also help me practice the full open-source contribution cycle — from reading an issue critically to submitting a PR that meets the project's standards.
+Beyond the technical side, I'm drawn to this issue because it's a meaningful contribution to a real open-source product that people use daily. I hope to deepen my understanding of how CLI tooling integrates with frontend build pipelines, and get hands-on experience with Zod schema design and the Bun-based monorepo workflow that Compass uses. Contributing here would also help me practice the full open-source contribution cycle - from reading an issue critically to submitting a PR that meets the project's standards.
 
 ---
 
