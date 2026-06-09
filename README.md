@@ -1,18 +1,18 @@
 # su26-ai301-contribution
-# Contribution 1: Get posthog env variables from build cli command options
+# Contribution 1: (Benchmark) Store the benchmark result in a more readable format
 
 **Contribution Number:** 1  
 **Student:** Resham Pokhrel  
-**Issue:** https://github.com/SwitchbackTech/compass-calendar/issues/841  
+**Issue:** https://github.com/NodeSecure/js-x-ray/issues/612  
 **Status:** Phase I Complete 
 
 ---
 
 ## Why I Chose This Issue
 
-This issue caught my attention because it sits at the intersection of build tooling and configuration management - two areas I've been actively exploring. The task of extending a Zod validation schema, updating TypeScript types, and wiring up a CLI argument parser with an environment variable fallback is a well-scoped, end-to-end change that touches real patterns used in production monorepos. As someone building skills in TypeScript and full-stack engineering, this feels like a great opportunity to work with a clean, well-structured codebase and understand how analytics credentials are safely handled at build time.
+This issue caught my attention because it sits at a sweet spot between developer tooling and code quality - two things I genuinely care about. Transforming raw JSON benchmark data into a readable Markdown table is a focused, self-contained task that touches real skills: reading and parsing structured data, writing clean Node.js/TypeScript scripts, and understanding how CI pipelines automate file updates on pull requests.
 
-Beyond the technical side, I'm drawn to this issue because it's a meaningful contribution to a real open-source product that people use daily. I hope to deepen my understanding of how CLI tooling integrates with frontend build pipelines, and get hands-on experience with Zod schema design and the Bun-based monorepo workflow that Compass uses. Contributing here would also help me practice the full open-source contribution cycle - from reading an issue critically to submitting a PR that meets the project's standards.
+I'm still building my depth in open-source contribution workflows, and this issue feels like the right size to do that well. I hope to get hands-on experience with mitata's output format, understand how automated benchmark tracking works in a production monorepo, and practice the full contribution cycle from reading the codebase to submitting a clean PR.
 
 ---
 
