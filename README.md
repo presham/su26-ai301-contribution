@@ -82,30 +82,48 @@ node --expose-gc --experimental-strip-types ./workspaces/js-x-ray/benchmark/writ
 
 ### Analysis
 
-[Your analysis of the root cause - what's causing the issue?]
+This isn't a bug — it's a readability gap. The benchmark pipeline works correctly: `write-snapshot.ts` calls `benchmark()` (from `bench.ts`), reshapes the mitata results into a `relevantResults` object, and persists it with `JSON.stringify(relevantResults, null, 2)`. The "root cause" of the issue is simply that JSON is the *only* output format. The raw JSON is accurate and machine-friendly (and CI depends on it), but a human scanning it has to mentally parse nested objects and raw nanosecond/byte values to compare benchmarks. There is no human-readable rendering of the same data.
 
 ### Proposed Solution
 
-[High-level description of your fix approach]
+Add a second, human-readable output **alongside** the existing JSON rather than replacing it. After the current `report.json` is written, generate a Markdown table (`report.md`) from the same `relevantResults` object. Each benchmark becomes a row, with timing values converted from nanoseconds to readable units (µs/ms) and heap from bytes to KB/MB. Keeping `report.json` byte-for-byte identical means the CI snapshot is unaffected; the table is purely additive.
 
 ### Implementation Plan
 
 Using UMPIRE framework (adapted):
 
-**Understand:** [Restate the problem]
+**Understand:**  
+The benchmark results are stored only as raw JSON in `workspaces/js-x-ray/benchmark/report.json`. The goal is to also store them in a more readable, table-like format, without changing or breaking the existing JSON output that CI relies on.
 
-**Match:** [What similar patterns/solutions exist in the codebase?]
+**Match:**  
+The codebase already establishes the pattern to follow:
+- `write-snapshot.ts` uses `new URL("report.json", import.meta.url)` + `writeFileSync` to persist output — the new file follows the same convention.
+- The results object is built once and serialized; I reuse that exact object as the data source for the table, so JSON and table can never drift apart.
+- mitata (the benchmarking lib) exposes `run({ format: "json" })` formatting, but this project intentionally captures the structured results object and serializes it manually — so the table generation stays in `write-snapshot.ts` for consistency, instead of relying on mitata's output formatting.
+
 
 **Plan:** [Step-by-step implementation plan]
-1. [Modify file X to do Y]
-2. [Add function Z]
-3. [Update tests]
+1. In `write-snapshot.ts`, keep the existing `report.json` write unchanged.
+2. Add helper functions `formatDuration(ns)` (ns → ns/µs/ms/s) and `formatBytes(bytes)` (B/KB/MB/GB) to make values readable.
+3. Add a `toMarkdown(report)` function that emits a metadata header (timestamp, runtime, CPU) plus a table with one row per benchmark (columns: name, avg, min, max, p75, p99, samples, heap avg, gc avg — with `—` fallback where `gc`/`heap` is absent).
+4. Write the result to `report.md` via `writeFileSync(new URL("report.md", import.meta.url), ...)`.
+5. Update the CI workflow so the snapshot step also stages/commits `report.md` (it currently auto-commits `report.json` on each PR).
+6. Update the contributing/benchmark docs to mention the new `report.md` artifact.
 
-**Implement:** [Link to your branch/commits as you work]
+**Implement:** https://github.com/resham57/js-x-ray/tree/benchmark-result-table
 
-**Review:** [Self-review checklist - does it follow the project's contribution guidelines?]
+**Review:**
+- [ ] `report.json` output is unchanged (no diff in the snapshot).
+- [ ] Code follows existing style (TS, `import.meta.url` + `writeFileSync`, runs under `--experimental-strip-types`).
+- [ ] No new runtime dependencies added.
+- [ ] Handles optional fields safely (`gc`, `heap` may be missing).
+- [ ] Linter and tests pass (`npm test` / project lint script).
 
-**Evaluate:** [How will you verify it works?]
+**Evaluate:**
+- Run `node --expose-gc --experimental-strip-types ./workspaces/js-x-ray/benchmark/write-snapshot.ts` inside the Docker container.
+- Confirm `report.json` is identical to the pre-change version (diff check).
+- Confirm `report.md` is generated and renders as a correct, readable table on GitHub.
+- Verify values match between the two files (e.g. a 265622 ns avg in JSON shows as `265.62 µs` in the table).
 
 ---
 
