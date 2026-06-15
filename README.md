@@ -20,19 +20,19 @@ I'm still building my depth in open-source contribution workflows, and this issu
 
 ### Problem Description
 
-[In your own words, what's broken or missing?]
+Benchmark results are only saved as raw JSON, which is hard to read and compare at a glance.
 
 ### Expected Behavior
 
-[What should happen?]
+Results should also be available in a readable, table-like format (one row per benchmark, readable units).
 
 ### Current Behavior
 
-[What actually happens?]
+Running the benchmark produces only `report.json` — accurate but not human-friendly.
 
 ### Affected Components
 
-[Which parts of the codebase are involved?]
+`workspaces/js-x-ray/benchmark/write-snapshot.ts` (serialization), which outputs to `workspaces/js-x-ray/benchmark/report.json`.
 
 ---
 
