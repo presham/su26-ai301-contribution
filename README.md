@@ -4,7 +4,7 @@
 **Contribution Number:** 1  
 **Student:** Resham Pokhrel  
 **Issue:** https://github.com/NodeSecure/js-x-ray/issues/612  
-**Status:** Phase I Complete 
+**Status:** Phase II Complete 
 
 ---
 
