@@ -28,7 +28,7 @@ Results should also be available in a readable, table-like format (one row per b
 
 ### Current Behavior
 
-Running the benchmark produces only `report.json` — accurate but not human-friendly.
+Running the benchmark produces only `report.json` - accurate but not human-friendly.
 
 ### Affected Components
 
@@ -42,7 +42,7 @@ Running the benchmark produces only `report.json` — accurate but not human-fri
 
 [Notes on setting up your local development environment - challenges you faced, how you solved them]
 
-The main challenge I faced was a Node.js version mismatch — the version the project requires differs from the one installed on my local system. To resolve this, and to keep the project's dependencies isolated from my local environment, I used Docker to run the project locally. Since Docker isn't referenced anywhere in the original repository, its documentation, or the contribution guidelines, I added a `Dockerfile.dev` to my fork (committed on the `add-dockerfile` branch and merged into `master`) so the setup is reproducible. It's available at `Dockerfile.dev` in the repo root.
+The main challenge I faced was a Node.js version mismatch - the version the project requires differs from the one installed on my local system. To resolve this, and to keep the project's dependencies isolated from my local environment, I used Docker to run the project locally. Since Docker isn't referenced anywhere in the original repository, its documentation, or the contribution guidelines, I added a `Dockerfile.dev` to my fork (committed on the `add-dockerfile` branch and merged into `master`) so the setup is reproducible. It's available at `Dockerfile.dev` in the repo root.
 
 Working branch: https://github.com/resham57/js-x-ray/tree/add-dockerfile
 
@@ -68,13 +68,13 @@ node --expose-gc --experimental-strip-types ./workspaces/js-x-ray/benchmark/writ
    
 3. The command in step 2 generates a `report.json` file inside the `workspaces/js-x-ray/benchmark` directory.
 
-**Note:** This is not a bug — the existing flow works correctly. The task is to additionally output the result from step 2 in a table format.
+**Note:** This is not a bug - the existing flow works correctly. The task is to additionally output the result from step 2 in a table format.
 
 ### Reproduction Evidence
 
 - **Commit showing reproduction:** https://github.com/resham57/js-x-ray/commit/7bb264662a3e0d56244ccb66c3f220b2804bcab5
 - **Screenshots/logs:** <img width="887" height="783" alt="image" src="https://github.com/user-attachments/assets/fc588154-a72b-474a-acd8-f34ba29cdf5f" />
-- **My findings:** Running the benchmark script produces a `report.json` file at `workspaces/js-x-ray/benchmark/report.json`. The data is correct and complete — per-benchmark stats (avg, min, max, percentiles, sample count, heap usage, and GC timings on heavier files) are all captured. The serialization happens in `write-snapshot.ts`, where the results object is written via `JSON.stringify(..., null, 2)`. The raw JSON is accurate but hard to scan at a glance, which confirms the issue: the same data would be far more readable rendered as a table. This is where the table-format output should be added, alongside the existing JSON (not replacing it, since CI consumes `report.json`).
+- **My findings:** Running the benchmark script produces a `report.json` file at `workspaces/js-x-ray/benchmark/report.json`. The data is correct and complete - per-benchmark stats (avg, min, max, percentiles, sample count, heap usage, and GC timings on heavier files) are all captured. The serialization happens in `write-snapshot.ts`, where the results object is written via `JSON.stringify(..., null, 2)`. The raw JSON is accurate but hard to scan at a glance, which confirms the issue: the same data would be far more readable rendered as a table. This is where the table-format output should be added, alongside the existing JSON (not replacing it, since CI consumes `report.json`).
 
 ---
 
@@ -82,7 +82,7 @@ node --expose-gc --experimental-strip-types ./workspaces/js-x-ray/benchmark/writ
 
 ### Analysis
 
-This isn't a bug — it's a readability gap. The benchmark pipeline works correctly: `write-snapshot.ts` calls `benchmark()` (from `bench.ts`), reshapes the mitata results into a `relevantResults` object, and persists it with `JSON.stringify(relevantResults, null, 2)`. The "root cause" of the issue is simply that JSON is the *only* output format. The raw JSON is accurate and machine-friendly (and CI depends on it), but a human scanning it has to mentally parse nested objects and raw nanosecond/byte values to compare benchmarks. There is no human-readable rendering of the same data.
+This isn't a bug - it's a readability gap. The benchmark pipeline works correctly: `write-snapshot.ts` calls `benchmark()` (from `bench.ts`), reshapes the mitata results into a `relevantResults` object, and persists it with `JSON.stringify(relevantResults, null, 2)`. The "root cause" of the issue is simply that JSON is the *only* output format. The raw JSON is accurate and machine-friendly (and CI depends on it), but a human scanning it has to mentally parse nested objects and raw nanosecond/byte values to compare benchmarks. There is no human-readable rendering of the same data.
 
 ### Proposed Solution
 
@@ -97,15 +97,15 @@ The benchmark results are stored only as raw JSON in `workspaces/js-x-ray/benchm
 
 **Match:**  
 The codebase already establishes the pattern to follow:
-- `write-snapshot.ts` uses `new URL("report.json", import.meta.url)` + `writeFileSync` to persist output — the new file follows the same convention.
+- `write-snapshot.ts` uses `new URL("report.json", import.meta.url)` + `writeFileSync` to persist output - the new file follows the same convention.
 - The results object is built once and serialized; I reuse that exact object as the data source for the table, so JSON and table can never drift apart.
-- mitata (the benchmarking lib) exposes `run({ format: "json" })` formatting, but this project intentionally captures the structured results object and serializes it manually — so the table generation stays in `write-snapshot.ts` for consistency, instead of relying on mitata's output formatting.
+- mitata (the benchmarking lib) exposes `run({ format: "json" })` formatting, but this project intentionally captures the structured results object and serializes it manually - so the table generation stays in `write-snapshot.ts` for consistency, instead of relying on mitata's output formatting.
 
 
 **Plan:** [Step-by-step implementation plan]
 1. In `write-snapshot.ts`, keep the existing `report.json` write unchanged.
 2. Add helper functions `formatDuration(ns)` (ns → ns/µs/ms/s) and `formatBytes(bytes)` (B/KB/MB/GB) to make values readable.
-3. Add a `toMarkdown(report)` function that emits a metadata header (timestamp, runtime, CPU) plus a table with one row per benchmark (columns: name, avg, min, max, p75, p99, samples, heap avg, gc avg — with `—` fallback where `gc`/`heap` is absent).
+3. Add a `toMarkdown(report)` function that emits a metadata header (timestamp, runtime, CPU) plus a table with one row per benchmark (columns: name, avg, min, max, p75, p99, samples, heap avg, gc avg - with `—` fallback where `gc`/`heap` is absent).
 4. Write the result to `report.md` via `writeFileSync(new URL("report.md", import.meta.url), ...)`.
 5. Update the CI workflow so the snapshot step also stages/commits `report.md` (it currently auto-commits `report.json` on each PR).
 6. Update the contributing/benchmark docs to mention the new `report.md` artifact.
@@ -113,11 +113,11 @@ The codebase already establishes the pattern to follow:
 **Implement:** https://github.com/resham57/js-x-ray/tree/benchmark-result-table
 
 **Review:**
-- [ ] `report.json` output is unchanged (no diff in the snapshot).
-- [ ] Code follows existing style (TS, `import.meta.url` + `writeFileSync`, runs under `--experimental-strip-types`).
-- [ ] No new runtime dependencies added.
-- [ ] Handles optional fields safely (`gc`, `heap` may be missing).
-- [ ] Linter and tests pass (`npm test` / project lint script).
+- [x] `report.json` output is unchanged (no diff in the snapshot).
+- [x] Code follows existing style (TS, `import.meta.url` + `writeFileSync`, runs under `--experimental-strip-types`).
+- [x] No new runtime dependencies added.
+- [x] Handles optional fields safely (`gc`, `heap` may be missing).
+- [x] Linter and tests pass (`npm test` / project lint script).
 
 **Evaluate:**
 - Run `node --expose-gc --experimental-strip-types ./workspaces/js-x-ray/benchmark/write-snapshot.ts` inside the Docker container.
@@ -131,26 +131,40 @@ The codebase already establishes the pattern to follow:
 
 ### Unit Tests
 
-- [ ] Test case 1: [Description]
-- [ ] Test case 2: [Description]
-- [ ] Test case 3: [Description]
+- [x] Test case 1: formatDuration converts nanoseconds to the correct human-readable unit at each boundary (ns, µs, ms, s)
+- [x] Test case 2: formatBytes converts bytes to the correct human-readable unit at each boundary (B, KB, MB, GB)
+- [x] Test case 3: toMarkdown renders metadata header (timestamp, runtime, CPU)
+- [x] Test case 4: toMarkdown renders table header and separator rows with all 12 columns
+- [x] Test case 5: toMarkdown uses - fallback when heap and gc are absent from stats
+- [x] Test case 6: toMarkdown renders formatted heap and gc values when present
+- [x] Test case 7: toMarkdown renders multiple benchmark rows
+- [x] Test case 8: toMarkdown output ends with a trailing newline
 
 ### Integration Tests
 
-- [ ] Integration scenario 1
-- [ ] Integration scenario 2
+- [x] Integration scenario 1: Confirmed `write-snapshot.ts` correctly imports toMarkdown from the extracted `markdown.ts` module and produces both `report.json` and `report.md` from the same benchmark run
+- [x] Integration scenario 2: Verified `report.md` content matches `report.json` data - spot-checked timing conversions (e.g., 233750 ns → 233.75 µs), byte conversions (e.g., 273523 bytes → 267.11 KB), and the - fallback for missing gc across all 11 benchmark rows
 
 ### Manual Testing
 
-[What you tested manually and results]
+- Ran node --test workspaces/js-x-ray/test/markdown.spec.ts - 14/14 tests pass
+- Ran existing test suite alongside new tests (warnings, Pipelines, NodeCounter, CollectableSet), no regressions
+- Ran npx eslint workspaces - zero errors (after auto-fixing @stylistic/member-delimiter-style in the interface)
 
 ---
 
 ## Implementation Notes
 
-### Week [X] Progress
+### Week 1 Progress
 
-[What you built this week, challenges faced, decisions made]
+**What was built:** A Markdown table report (`report.md`) generated alongside `report.json` during benchmark snapshot writes. The formatting logic was extracted into a standalone  `benchmark/markdown.ts` module with three exported functions: `formatDuration`, `formatBytes`, and `toMarkdown`. Unit tests were added covering all boundary conditions and rendering behavior.
+
+**Challenges faced:** 
+Other than the development environment setup - which was also relatively straightforward - I did not face any major challenges.
+
+**Decisions made:**
+- Defined a `BenchmarkReport` TypeScript interface to type the `toMarkdown` input, rather than relying on `typeof` against a runtime value.
+- Only surfaced `heap.avg` and `gc.avg` in the Markdown table (not min/max/total) to keep the table readable. The full data remains in `report.json`.
 
 ### Week [Y] Progress
 
@@ -158,9 +172,23 @@ The codebase already establishes the pattern to follow:
 
 ### Code Changes
 
-- **Files modified:** [List]
-- **Key commits:** [Links to important commits]
-- **Approach decisions:** [Why you chose certain approaches]
+- **Files modified:**
+  - `workspaces/js-x-ray/benchmark/write-snapshot.ts` - added import of toMarkdown, added report.md write call
+  - `workspaces/js-x-ray/benchmark/report.json` - re-ran benchmark snapshot
+
+- **Files created:**
+  - `workspaces/js-x-ray/benchmark/markdown.ts` - extracted formatDuration, formatBytes, toMarkdown + BenchmarkReport interface
+  - `workspaces/js-x-ray/benchmark/report.md` - generated Markdown table output
+  - `workspaces/js-x-ray/test/markdown.spec.ts` - 14 unit tests across 3 describe blocks
+
+- **Key commits:**
+  - [5e4292a](https://github.com/resham57/js-x-ray/commit/5e4292a9848212bcef44168b1617554ba6c3d698) Updates write snapshot to support report-table feature
+  - [16e58ef](https://github.com/resham57/js-x-ray/commit/16e58efcbe8d55e43d750bbe9190d9f358a62e97) Updates existing json report and adds new table report
+  - [f7d69e9](https://github.com/resham57/js-x-ray/commit/f7d69e9c8f570541d33e48effafd44fcb0fdcea3) refactor(reports): move markdown generation to separate ts file
+  - [aac0d5c](https://github.com/resham57/js-x-ray/commit/aac0d5c57b6fe07b222baf00e6a1dc14f79a518c) test: add markdown generation specs
+  - [a062fbd](https://github.com/resham57/js-x-ray/commit/a062fbdcb99d6c1d0899fea55037e6c3095bb14f) test: add three test cases for markdown generation
+
+- **Approach decisions:** Chose module extraction over in-file exports to avoid side-effect imports in tests. Used `describe/test` grouping (matching the project's `Pipelines.spec.ts` pattern) since the spec covers three distinct functions.
 
 ---
 
