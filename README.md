@@ -194,7 +194,7 @@ Other than the development environment setup - which was also relatively straigh
 
 ## Pull Request
 
-**PR Link:** [GitHub PR URL when submitted]
+**PR Link:** https://github.com/NodeSecure/js-x-ray/pull/654
 
 **PR Description:** [Draft or final PR description - much of the content above can be adapted]
 
@@ -202,7 +202,7 @@ Other than the development environment setup - which was also relatively straigh
 - [Date]: [Summary of feedback received]
 - [Date]: [How you addressed it]
 
-**Status:** [Awaiting review / Iterating / Approved / Merged]
+**Status:** Awaiting review
 
 ---
 
