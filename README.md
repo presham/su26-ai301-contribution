@@ -196,13 +196,20 @@ Other than the development environment setup - which was also relatively straigh
 
 **PR Link:** https://github.com/NodeSecure/js-x-ray/pull/654
 
-**PR Description:** [Draft or final PR description - much of the content above can be adapted]
+**PR Description:**
+- Add new benchmark formatting logic (`formatDuration`, `formatBytes`, `toMarkdown`) to create human-readable report `report.md` to an existing `benchmark/write-snapshot.ts` module
+- Extract benchmark formatting logic (`formatDuration`, `formatBytes`, `toMarkdown`) into a new `benchmark/markdown.ts` module
+- Update `write-snapshot.ts` to import from `markdown.ts` and write a human-readable `report.md` alongside the existing `report.json`
+- Re-run benchmark snapshot (`report.json` + new `report.md`)
+- Add unit tests for all three exported functions covering unit-boundary conversions, the `—` fallback when heap/gc data is absent, and multi-row rendering
+
 
 **Maintainer Feedback:**
-- [Date]: [Summary of feedback received]
-- [Date]: [How you addressed it]
+- [06/22/2026]: The maintainer liked the implementation and felt it was an improvement over the current JSON output. They asked me to (1) remove the existing JSON reporting logic and the `report.json` file, (2) unexport the helper functions (`formatDuration`, `formatBytes`) since they're only used internally, and (3) remove the now-redundant tests for those internal helpers. They also requested a changeset.
 
-**Status:** Awaiting review
+- [06/22/2026]: Addressed all feedback — removed the JSON report generation code and `report.json`, unexported the internal helpers (keeping only `toMarkdown` public), removed the corresponding tests, and added a changeset.
+
+**Status:** Merged
 
 ---
 
