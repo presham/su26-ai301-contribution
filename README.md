@@ -241,6 +241,6 @@ Other than the development environment setup - which was also relatively straigh
 
 ## Resources Used
 
-- [Link to helpful documentation]
-- [Tutorial or Stack Overflow post that helped]
-- [GitHub issues or discussions that helped]
+- [Adding a Changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md)
+- [Issue](https://github.com/NodeSecure/js-x-ray/issues/612)
+- [Pull Request](https://github.com/NodeSecure/js-x-ray/pull/654)
