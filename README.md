@@ -234,7 +234,8 @@ Other than the development environment setup - which was also relatively straigh
 
 ### What I'd Do Differently Next Time
 
-[Reflection on your process]
+- **Check project conventions up front.** I corrected commit types/scopes several times (`refactor` vs `feat` vs `test`, wrong scope). Next time I'll read `CONTRIBUTING.md` and skim recent commit history *before* committing, so I get the format right the first time.
+- **Add the changeset as part of the feature commit,** rather than as a follow-up after the maintainer asked - it's a standard expectation I now know to anticipate.
 
 ---
 
