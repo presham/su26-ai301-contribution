@@ -227,7 +227,10 @@ Other than the development environment setup - which was also relatively straigh
 
 ### Challenges Overcome
 
-[What was hard and how you solved it]
+- **Node version mismatch.** My local Node version didn't match the project's. I solved it with Docker - a `Dockerfile.dev` plus a bind mount so generated files appeared straight on my host without polluting my local environment.
+- **Lint failures.** Hit `@stylistic/no-mixed-operators` on `bytes / 1_024 ** 3`. Learned it was a clarity rule (not a correctness bug) and resolved it by extracting named constants so each expression used a single operator.
+- **Scoping the change correctly.** My first instinct was to treat this as a one-off script change, but I learned to keep the JSON output stable initially, design the table as additive, and only remove the JSON once the maintainer explicitly asked - and to flag the CI risk of that removal.
+- **Responding to review.** Iterated on maintainer feedback: unexported internal helpers to keep the module's public API minimal, removed the now-redundant tests, and added a changeset.
 
 ### What I'd Do Differently Next Time
 
