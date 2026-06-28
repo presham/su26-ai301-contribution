@@ -217,7 +217,13 @@ Other than the development environment setup - which was also relatively straigh
 
 ### Technical Skills Gained
 
-[What you learned technically]
+- **Working in a TypeScript monorepo.** Got comfortable with npm workspaces - locating the right package (`workspaces/js-x-ray`), running scripts from the correct directory, and understanding how a workspace's tooling is separate from the repo root.
+- **Running TypeScript without a build step.** Learned how Node executes `.ts` directly via `--experimental-strip-types`, why the project sticks to type-only TypeScript, and how flags like `--expose-gc` feed the benchmark tooling (mitata) for more stable measurements.
+- **Benchmark tooling and data shaping.** Understood how mitata reports stats (nanoseconds for timing, bytes for heap) and wrote formatting logic to convert those into human-readable units and a Markdown table.
+- **Testing with `node:test`.** Wrote deterministic unit tests for pure functions using the built-in test runner and `node:assert`, and learned why benchmark output itself (non-deterministic timings) shouldn't be asserted on.
+- **Reading coverage reports.** Learned to interpret statement/branch/function/line coverage and understand why removing tests for internal helpers lowered branch coverage.
+- **Project conventions.** Conventional Commits (correct type/scope, breaking-change footers), changesets for versioning/changelog automation, and running `npm run check` (tests + lint) before pushing.
+- **Containerizing a dev environment** with a `Dockerfile.dev` and a bind mount, so the project's required Node version stayed isolated from my local machine.
 
 ### Challenges Overcome
 
