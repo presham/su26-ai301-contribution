@@ -102,7 +102,7 @@ The codebase already establishes the pattern to follow:
 - mitata (the benchmarking lib) exposes `run({ format: "json" })` formatting, but this project intentionally captures the structured results object and serializes it manually - so the table generation stays in `write-snapshot.ts` for consistency, instead of relying on mitata's output formatting.
 
 
-**Plan:** [Step-by-step implementation plan]
+**Plan:**
 1. In `write-snapshot.ts`, keep the existing `report.json` write unchanged.
 2. Add helper functions `formatDuration(ns)` (ns → ns/µs/ms/s) and `formatBytes(bytes)` (B/KB/MB/GB) to make values readable.
 3. Add a `toMarkdown(report)` function that emits a metadata header (timestamp, runtime, CPU) plus a table with one row per benchmark (columns: name, avg, min, max, p75, p99, samples, heap avg, gc avg - with `—` fallback where `gc`/`heap` is absent).
